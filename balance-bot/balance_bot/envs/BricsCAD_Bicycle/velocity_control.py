@@ -52,7 +52,7 @@ while (1):
   cubePos, cubeOrn = p.getBasePositionAndOrientation(humanoid)
   cubeEuler = p.getEulerFromQuaternion(cubeOrn)
   linear, angular = p.getBaseVelocity(humanoid)
-  print(cubePos)
+  print(cubeEuler)
   
 
   time.sleep(0.01)
