@@ -16,8 +16,9 @@ class BalancebotEnv(gym.Env):
     }
 
     def __init__(self, render=True):
+        self.targetPosition = (-5,4)
         self._observation = []
-        self.action_space = spaces.Discrete(9)
+        self.action_space = spaces.Discrete(5)
         self.observation_space = spaces.Box(np.array([-math.pi, -math.pi, -500]), 
                                             np.array([math.pi, math.pi, 500])) # pitch, gyro, com.sp.
 
@@ -49,9 +50,10 @@ class BalancebotEnv(gym.Env):
 
     def _reset(self):
         # reset is called once at initialization of simulation
-        self.vt = 0
-        self.vd = 0
-        self.maxV = 24.6 # 235RPM = 24,609142453 rad/sec
+        ## Back Wheel Velocity
+        self.vt = -200
+        #self.vd = 0
+        self.maxV = 300 # 235RPM = 24,609142453 rad/sec
         self._envStepCounter = 0
 
         ## Bar Position
@@ -75,39 +77,40 @@ class BalancebotEnv(gym.Env):
         return np.array(self._observation)
 
     def _assign_throttle(self, action):
-        ## Back Wheel Velocity Control
-        dv = 5
-        ## 50, 25, 10, 0.5, 0
-        deltav = [-10.*dv,-5.*dv, -2.*dv, -0.1*dv, 0, 0.1*dv, 2.*dv,5.*dv, 10.*dv][action]
+        deltav = 0
+        deltaA = 0
+        # 0: do nothing
+        if action == -1 or action == 0:
+            pass
+        # 1: Accelerate
+        elif action == 1:
+            deltav = -25 #(minus is forward...)
+        # 2: Decelerate
+        elif action == 2:
+            deltav = 25
+        # 3: Turn Left
+        elif action == 3:
+            deltaA = -2
+        # 4: Turn Right
+        elif action == 4:
+            deltaA = 2
+
         vt = clamp(self.vt + deltav, -self.maxV, self.maxV)
         self.vt = vt
-        
-        ## Bar Position delta
-        dA = 0.0174533 ## 1 deg
-        ## 0 deg, 0.1 deg,  2 deg, 5 deg, 10 deg
-        deltaA = [-10.*dA,-5.*dA, -2.*dA, -0.1*dA, 0, 0.1*dA, 2.*dA,5.*dA, 10.*dA][action]
         pb = clamp(self.pb + deltaA, -self.maxP, self.maxP)
         self.pb = pb
+
         ## Set position control for the bar
         p.setJointMotorControl2(bodyUniqueId = self.botId, 
                                 jointIndex=0, 
                                 controlMode=p.POSITION_CONTROL, 
                                 targetPosition=pb, 
-                                force=5 * 240.)
+                                force= 240.)
         p.setJointMotorControl2(bodyUniqueId=self.botId, 
                                 jointIndex=2, 
                                 controlMode=p.VELOCITY_CONTROL, 
-                                targetVelocity=-vt) ## Minux for moving forward
+                                targetVelocity=vt)
 
-        ###############################
-        # p.setJointMotorControl2(bodyUniqueId=self.botId, 
-        #                         jointIndex=0, 
-        #                         controlMode=p.VELOCITY_CONTROL, 
-        #                         targetVelocity=vt)
-        # p.setJointMotorControl2(bodyUniqueId=self.botId, 
-        #                         jointIndex=1, 
-        #                         controlMode=p.VELOCITY_CONTROL, 
-        #                         targetVelocity=-vt)
 
     def _compute_observation(self):
         cubePos, cubeOrn = p.getBasePositionAndOrientation(self.botId)
@@ -115,13 +118,17 @@ class BalancebotEnv(gym.Env):
         linear, angular = p.getBaseVelocity(self.botId)
         return [cubeEuler[0],angular[0],self.vt]
 
+    # def _compute_reward(self):
+    #     return 0.1 - abs(self.vt - self.vd) * 0.005
     def _compute_reward(self):
-        return 0.1 - abs(self.vt - self.vd) * 0.005
+        cubePos, cubeOrn = p.getBasePositionAndOrientation(self.botId)
+        #cubeEuler = p.getEulerFromQuaternion(cubeOrn)
+        return -((self.targetPosition[0]-cubePos[0])**2 + (self.targetPosition[1] - cubePos[1])**2)
 
     def _compute_done(self):
         cubePos, _ = p.getBasePositionAndOrientation(self.botId)
         ## Fall below 12 degree
-        return cubePos[2] < 0.766 or self._envStepCounter >= 1500
+        return cubePos[2] < 0.766 or cubePos[2] > 0.83 or self._envStepCounter >= 1500
 
     def _render(self, mode='human', close=False):
         pass
