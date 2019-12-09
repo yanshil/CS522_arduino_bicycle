@@ -1,0 +1,19 @@
+BricsCAD_Bicycle_controller:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  # Position Controllers --------------------------------------
+    Bar_rotation_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: Bar_rotation
+      pid: {p: 100.0, i: 0.01, d: 10.0}
+    FrontWheel_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: FrontWheel
+      pid: {p: 100.0, i: 0.01, d: 10.0}
+    BackWheel_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: BackWheel
+      pid: {p: 100.0, i: 0.01, d: 10.0}

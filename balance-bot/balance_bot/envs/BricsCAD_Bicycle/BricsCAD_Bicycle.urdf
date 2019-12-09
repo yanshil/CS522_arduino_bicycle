@@ -1,0 +1,143 @@
+<?xml version="1.0" ?>
+<robot name="BricsCAD_Bicycle">
+<link name="base_link">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.918245 1e-06 0.825684"/>
+    <mass value="8.875476"/>
+    <inertia ixx="0.82315" ixy="2e-06" ixz="6.729203" iyy="1.342269" iyz="-6.699831" izz="0.531794"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="bin_stl/base_link_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="bin_stl/base_link_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="Front_bar_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.13812200000000002 0.0 -0.17130100000000004"/>
+    <mass value="2.561041"/>
+    <inertia ixx="0.163142" ixy="0.0" ixz="0.264626" iyy="0.177416" iyz="-0.293128" izz="0.028739"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.261382 0.0 -1.009589"/>
+    <geometry>
+      <mesh filename="bin_stl/Front_bar_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.261382 0.0 -1.009589"/>
+    <geometry>
+      <mesh filename="bin_stl/Front_bar_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="Front_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+    <mass value="3.396653"/>
+    <inertia ixx="0.284168" ixy="0.0" ixz="0.0" iyy="0.568245" iyz="-0.0" izz="0.284168"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.0 0.0 -0.419549"/>
+    <geometry>
+      <mesh filename="bin_stl/Front_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.0 0.0 -0.419549"/>
+    <geometry>
+      <mesh filename="bin_stl/Front_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="Back_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+    <mass value="3.396653"/>
+    <inertia ixx="0.284168" ixy="0.0" ixz="1.829799" iyy="0.568245" iyz="-1.829798" izz="0.284168"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-1.284013 0.0 -0.419549"/>
+    <geometry>
+      <mesh filename="bin_stl/Back_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-1.284013 0.0 -0.419549"/>
+    <geometry>
+      <mesh filename="bin_stl/Back_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<joint name="Bar_rotation" type="revolute">
+  <origin rpy="0 0 0" xyz="0.261382 0.0 1.009589"/>
+  <parent link="base_link"/>
+  <child link="Front_bar_1"/>
+  <axis xyz="-0.00405 0.0 -0.009143"/>
+  <limit effort="100" lower="-0.785398" upper="0.785398" velocity="100"/>
+</joint>
+<transmission name="Bar_rotation_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="Bar_rotation">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="Bar_rotation_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<joint name="FrontWheel" type="continuous">
+  <origin rpy="0 0 0" xyz="-0.261382 0.0 -0.59004"/>
+  <parent link="Front_bar_1"/>
+  <child link="Front_1"/>
+  <axis xyz="0.0 0.01 0.0"/>
+</joint>
+<transmission name="FrontWheel_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="FrontWheel">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="FrontWheel_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<joint name="BackWheel" type="continuous">
+  <origin rpy="0 0 0" xyz="1.284013 0.0 0.419549"/>
+  <parent link="base_link"/>
+  <child link="Back_1"/>
+  <axis xyz="0.0 0.01 0.0"/>
+</joint>
+<transmission name="BackWheel_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="BackWheel">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="BackWheel_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<gazebo>
+  <plugin filename="libgazebo_ros_control.so" name="control"/>
+</gazebo>
+</robot>

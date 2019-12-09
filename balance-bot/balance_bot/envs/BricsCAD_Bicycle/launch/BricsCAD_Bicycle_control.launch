@@ -1,0 +1,7 @@
+<launch>
+  <rosparam command="load" file="$(find fusion2urdf)/launch/BricsCAD_Bicycle_controller.yaml"/>
+  <node args="Bar_rotation_position_controller FrontWheel_position_controller BackWheel_position_controller joint_state_controller" name="controller_spawner" ns="BricsCAD_Bicycle" output="screen" pkg="controller_manager" respawn="false" type="spawner"/>
+  <node name="robot_state_publisher" output="screen" pkg="robot_state_publisher" respawn="false" type="robot_state_publisher">
+    <remap from="/joint_states" to="/BricsCAD_Bicycle/joint_states"/>
+  </node>
+</launch>
