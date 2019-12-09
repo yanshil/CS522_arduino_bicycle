@@ -7,7 +7,7 @@ planeId = p.loadURDF("plane.urdf")
 
 cubeStartPos = [0,0,0]
 cubeStartOrientation = p.getQuaternionFromEuler([0,0,0])
-humanoid = p.loadURDF("BricsCAD_Bicycle.urdf",cubeStartPos, cubeStartOrientation, useFixedBase=1)
+humanoid = p.loadURDF("BricsCAD_Bicycle.urdf",cubeStartPos, cubeStartOrientation)
 
 ############ Add parameters
 gravId = p.addUserDebugParameter("gravity", -10, 10, -10)
@@ -50,6 +50,9 @@ while (1):
   p.setJointMotorControl2(humanoid, jointDict["Front"]["id"], controlMode=p.VELOCITY_CONTROL, targetVelocity = front_vec, force = maxForce)
   
   cubePos, cubeOrn = p.getBasePositionAndOrientation(humanoid)
-  print(cubePos[2])
+  cubeEuler = p.getEulerFromQuaternion(cubeOrn)
+  linear, angular = p.getBaseVelocity(humanoid)
+  print(cubePos)
+  
 
   time.sleep(0.01)
