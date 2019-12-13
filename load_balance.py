@@ -6,7 +6,7 @@ from baselines import deepq
 def main():
 
   env = BalancebotEnv(render=True)
-  act = deepq.load("balance.pkl")
+  act = deepq.load("./output/train4.pkl")
   print(act)
   while True:
     obs, done = env.reset(), False

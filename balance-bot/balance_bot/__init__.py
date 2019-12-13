@@ -8,7 +8,7 @@ register(
     entry_point='balance_bot.envs:BalancebotEnv',
 )
 
-register(
-    id='balancebot-noise-v0',
-    entry_point='balance_bot.envs:BalancebotEnvNoise',
-)
+# register(
+#     id='balancebot-noise-v0',
+#     entry_point='balance_bot.envs:BalancebotEnvNoise',
+# )

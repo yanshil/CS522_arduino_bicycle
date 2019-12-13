@@ -20,8 +20,8 @@ class BalancebotEnv(gym.Env):
         self._observation = []
         self.action_space = spaces.Discrete(5)
         ## Observation_space (3+3+1): Position(x,y,z) + Orientation(eulerX,eulerY,eulerZ) + back_wheel_velocity(1)
-        self.observation_space = spaces.Box(np.array([-math.inf, -math.inf, -1, -math.pi, -math.pi, -math.pi  , -500]), 
-                                            np.array([-math.inf, -math.inf, 1, math.pi, math.pi, math.pi  , 500])) # pitch, gyro, com.sp.
+        self.observation_space = spaces.Box(np.array([-math.inf, -math.inf, -1, -math.pi, -math.pi, -math.pi  , -300]), 
+                                            np.array([-math.inf, -math.inf, 1, math.pi, math.pi, math.pi  , 300])) # pitch, gyro, com.sp.
 
         if (render):
             self.physicsClient = p.connect(p.GUI)
@@ -86,16 +86,16 @@ class BalancebotEnv(gym.Env):
             pass
         # 1: Accelerate
         elif action == 1:
-            deltav = -25 #(minus is forward...)
+            deltav = -10 #(minus is forward...)
         # 2: Decelerate
         elif action == 2:
-            deltav = 25
+            deltav = 10
         # 3: Turn Left
         elif action == 3:
-            deltaA = -2
+            deltaA = -1
         # 4: Turn Right
         elif action == 4:
-            deltaA = 2
+            deltaA = 1
 
         vt = clamp(self.vt + deltav, -self.maxV, self.maxV)
         self.vt = vt
@@ -122,9 +122,11 @@ class BalancebotEnv(gym.Env):
     # def _compute_reward(self):
     #     return 0.1 - abs(self.vt - self.vd) * 0.005
     def _compute_reward(self):
+        ## Reward: Stand as long as it could and try to reach the target point
         cubePos, _ = p.getBasePositionAndOrientation(self.botId)
         #cubeEuler = p.getEulerFromQuaternion(cubeOrn)
-        return -((self.targetPosition[0]-cubePos[0])**2 + (self.targetPosition[1] - cubePos[1])**2)
+        #return -((self.targetPosition[0]-cubePos[0])**2 + (self.targetPosition[1] - cubePos[1])**2)
+        return self._envStepCounter
 
     def _get_info(self):
         cubePos, cubeOrn = p.getBasePositionAndOrientation(self.botId)
@@ -139,7 +141,8 @@ class BalancebotEnv(gym.Env):
     def _compute_done(self):
         cubePos, _ = p.getBasePositionAndOrientation(self.botId)
         ## Fall below 12 degree
-        return cubePos[2] < 0.766 or cubePos[2] > 0.83 or self._envStepCounter >= 1500
+        #return cubePos[2] < 0.766 or cubePos[2] > 0.83 or self._envStepCounter >= 1500
+        return cubePos[2] < 0.766
 
     def _render(self, mode='human', close=False):
         pass
