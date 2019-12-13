@@ -1,3 +1,9 @@
+## Video Demo of the training phase
+
+https://streamable.com/yhs6v
+
+![](./img/pybullet_sim.PNG)
+
 ### Install Dependencies
 
 My develop environment : a Windows Linux Subsystem with Ubuntu 18.04
