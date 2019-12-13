@@ -4,6 +4,13 @@ https://streamable.com/yhs6v
 
 ![](./img/pybullet_sim.PNG)
 
+### Run training output
+
+```
+## Don't forget to change line9 to load different tranings
+python load_balance.py
+```
+
 ### Install Dependencies
 
 My develop environment : a Windows Linux Subsystem with Ubuntu 18.04
