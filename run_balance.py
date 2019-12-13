@@ -3,12 +3,13 @@ from baselines import deepq
 import balance_bot
 
 def callback(lcl, glb):
-    # stop training if reward exceeds 199
-    is_solved = lcl['t'] > 100 and sum(lcl['episode_rewards'][-101:-1]) / 100 >= 199
+    # stop training if reward exceeds 1 (currently distance to the target point)
+    is_solved = lcl['t'] > 100 and sum(lcl['episode_rewards'][-101:-1]) / 100 >= 1
     return is_solved
 
 def main():
     env = gym.make("balancebot-v0")
+    ## Create learning agenet
     model = deepq.models.mlp([16, 12])
     act = deepq.learn(
         env,
